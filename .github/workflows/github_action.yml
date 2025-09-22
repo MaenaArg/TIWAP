@@ -15,12 +15,16 @@ jobs:
         uses: jakejarvis/wait-action@master
         with:
           time: '60s'
+          
+      - name: Run ZAP scan from container
+        run: |
+          docker exec tiwap-zap-1 zap.sh -cmd -quickurl http://app:5000 -quickout /zap/zap-report.html
 
-      - name: Run OWASP ZAP quick scan
-        run: zap.sh -cmd -quickurl http://localhost:5000 -quickout zap-report.html
+      - name: Copy ZAP HTML report to host
+        run: docker cp tiwap-zap-1:/zap/zap-report.html ./zap-report.html
 
       - name: Upload ZAP report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: zap-report.html
+          path: ./zap-report.html
