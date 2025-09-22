@@ -1,0 +1,29 @@
+name: github-action-dast
+on: [push]
+
+jobs: 
+  dast:
+    runs-on: ubuntu-latest
+    steps :
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build the docker-compose
+        run: docker-compose up -d
+
+      - name: Sleep
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+
+      - name: Run OWASP ZAP quick scan
+        run: |
+          docker run --rm --network host ghcr.io/zaproxy/zaproxy:latest \
+          zap.sh -cmd -quickurl http://localhost:5000 \
+          -quickout /github/workspace/zap-report.html
+
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap-report.html
