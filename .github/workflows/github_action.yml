@@ -17,10 +17,7 @@ jobs:
           time: '60s'
 
       - name: Run OWASP ZAP quick scan
-        run: |
-          docker run --rm --network host ghcr.io/zaproxy/zaproxy:latest \
-          zap.sh -cmd -quickurl http://localhost:5000 \
-          -quickout /github/workspace/zap-report.html
+        run: zap.sh -cmd -quickurl http://localhost:5000 -quickout zap-report.html
 
       - name: Upload ZAP report
         uses: actions/upload-artifact@v4
